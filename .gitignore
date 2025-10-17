@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Editors/OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# App data folders (keep placeholders only)
+db/**/*.db
+db/**/*.sqlite
+db/**/*.sqlite3
+yedek/**
+disa_aktar/**
+ice_aktar/**
+raporlar/**
+!db/.gitkeep
+!yedek/.gitkeep
+!disa_aktar/.gitkeep
+!ice_aktar/.gitkeep
+!raporlar/.gitkeep
