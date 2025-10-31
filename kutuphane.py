@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, sys, sqlite3, datetime, re, shutil, random, string
+import os, sys, sqlite3, datetime, re, shutil, random, string, unicodedata
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout,
@@ -181,8 +181,8 @@ def auto_backup():
 def normalize(s: str) -> str:
     if s is None: return ""
     t = str(s).strip().lower()
-    REP = {"ı":"i","İ":"i","ş":"s","Ş":"s","ğ":"g","Ğ":"g","ü":"u","Ü":"u","ö":"o","Ö":"o","ç":"c","Ç":"c"}
-    for k,v in REP.items(): t = t.replace(k,v)
+    t = unicodedata.normalize("NFKD", t)
+    t = ''.join(ch for ch in t if not unicodedata.combining(ch))
     t = re.sub(r"\s+", " ", t)
     return t
 
