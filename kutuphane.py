@@ -1030,6 +1030,7 @@ class LoansTab(QWidget):
         self.sel_book_id = None
         self.selected_member_no = None
         self.selected_book_title = None
+        self.active_rows = []
         self.build_ui()
         self.reset_loan_form() # Formu başlangıçta varsayılan tarihe ayarla
 
@@ -1084,6 +1085,14 @@ class LoansTab(QWidget):
         form.addRow(form_panel_layout)
         main.addWidget(form_box)
 
+        search_layout = QHBoxLayout()
+        search_layout.addWidget(QLabel("Ödünç Arama:"))
+        self.edActiveSearch = QLineEdit()
+        self.edActiveSearch.setPlaceholderText("Üye, kitap, barkod vb. ara")
+        search_layout.addWidget(self.edActiveSearch)
+        search_layout.addStretch()
+        main.addLayout(search_layout)
+
         # Tables
         self.tblActive = QTableWidget(0, 11)
         self.tblActive.setHorizontalHeaderLabels(["LoanID","Üye No","Üye","Sınıf","Şube","Kitap","Barkod","Raf","Dolap","Veriliş","Son Tarih"])
@@ -1112,6 +1121,7 @@ class LoansTab(QWidget):
         self.edBookTitle.textChanged.connect(self.search_book_suggest)
         self.book_suggest.itemClicked.connect(self.pick_book)
         self.btnShowBookDetails.clicked.connect(self.on_show_book_details)
+        self.edActiveSearch.textChanged.connect(self.filter_active_loans)
 
         self.refresh_tables()
 
@@ -1133,6 +1143,42 @@ class LoansTab(QWidget):
     def update_due_date(self, date):
         default_days = get_default_loan_days()
         self.deDue.setDate(date.addDays(default_days))
+
+    def filter_active_loans(self):
+        self.apply_active_filter()
+
+    def apply_active_filter(self):
+        search_text = self.edActiveSearch.text().strip()
+        if not getattr(self, "active_rows", None):
+            self.populate_active_table([])
+            return
+
+        if not search_text:
+            filtered = self.active_rows
+        else:
+            norm_search = normalize(search_text)
+            filtered = []
+            for row in self.active_rows:
+                for col in row:
+                    if norm_search in normalize(str(col)):
+                        filtered.append(row)
+                        break
+
+        self.populate_active_table(filtered)
+
+    def populate_active_table(self, rows):
+        self.tblActive.setRowCount(len(rows))
+        today = datetime.date.today().isoformat()
+        for r, row in enumerate(rows):
+            due_date = row[10]
+            is_overdue = due_date < today
+
+            for c_idx, val in enumerate(row):
+                item = QTableWidgetItem(str(val))
+                if is_overdue:
+                    item.setForeground(QtGui.QColor("red"))
+                self.tblActive.setItem(r, c_idx, item)
+        self.tblActive.resizeColumnsToContents()
 
     # --- live search helpers ---
     def search_member_suggest(self):
@@ -1267,9 +1313,17 @@ class LoansTab(QWidget):
             QMessageBox.information(self, "Bilgi", "Teslim almak için bir ödünç kaydı seçin.")
             return
         
-        loan_id = int(self.tblActive.item(rows[0].row(), 0).text())
-        
-        if QMessageBox.question(self, "Onay", "Seçili kitabı teslim almak istediğinizden emin misiniz?") == QMessageBox.Yes:
+        selected_row = rows[0].row()
+        loan_id = int(self.tblActive.item(selected_row, 0).text())
+        member_name = self.tblActive.item(selected_row, 2).text()
+        book_title = self.tblActive.item(selected_row, 5).text()
+
+        confirm_text = (
+            f"{member_name} adlı üyenin\n"
+            f"\"{book_title}\" kitabını teslim almak istediğinizden emin misiniz?"
+        )
+
+        if QMessageBox.question(self, "Onay", confirm_text) == QMessageBox.Yes:
             with db_conn() as conn:
                 c = conn.cursor()
                 
@@ -1309,19 +1363,9 @@ class LoansTab(QWidget):
                          ORDER BY
                             l.due_date""")
             rows = c.fetchall()
-        
-        self.tblActive.setRowCount(len(rows))
-        today = datetime.date.today().isoformat()
-        for r, row in enumerate(rows):
-            due_date = row[10]
-            is_overdue = due_date < today
-            
-            for c_idx, val in enumerate(row):
-                item = QTableWidgetItem(str(val))
-                if is_overdue:
-                    item.setForeground(QtGui.QColor("red"))
-                self.tblActive.setItem(r, c_idx, item)
-        self.tblActive.resizeColumnsToContents()
+
+        self.active_rows = rows
+        self.apply_active_filter()
 
     def refresh_loan_history(self):
         with db_conn() as conn:
