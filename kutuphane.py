@@ -55,6 +55,44 @@ QPushButton:disabled {
 }
 """
 
+DANGER_BUTTON_STYLE = """
+QPushButton {
+    background-color: #DC2626;
+    color: white;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 8px 18px;
+}
+QPushButton:hover {
+    background-color: #B91C1C;
+}
+QPushButton:pressed {
+    background-color: #991B1B;
+}
+QPushButton:disabled {
+    background-color: #FCA5A5;
+    color: white;
+}
+"""
+
+
+def _apply_button_style(button: QPushButton, stylesheet: str, min_height: int) -> None:
+    button.setStyleSheet(stylesheet)
+    button.setMinimumHeight(min_height)
+    button.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+
+
+def style_primary(button: QPushButton, min_height: int = 40) -> None:
+    _apply_button_style(button, PRIMARY_BUTTON_STYLE, min_height)
+
+
+def style_secondary(button: QPushButton, min_height: int = 32) -> None:
+    _apply_button_style(button, SECONDARY_BUTTON_STYLE, min_height)
+
+
+def style_danger(button: QPushButton, min_height: int = 40) -> None:
+    _apply_button_style(button, DANGER_BUTTON_STYLE, min_height)
+
 # -------------------------------------------------------------------------
 # Uygulamanın ana dizinini kesin olarak belirleme (.py ve .exe için)
 # -------------------------------------------------------------------------
@@ -354,12 +392,11 @@ class BooksTab(QWidget):
         top_layout.addLayout(form_layout)
         
         btn_row = QHBoxLayout()
-        self.btnAdd = QPushButton("Ekle")
-        self.btnUpdate = QPushButton("Güncelle")
-        self.btnDelete = QPushButton("Seçiliyi Sil")
-        self.btnDeleteAll = QPushButton("Tümünü Sil")
-        self.btnDeleteAll.setStyleSheet("color: red;")
-        self.btnClear = QPushButton("Temizle")
+        self.btnAdd = QPushButton("Ekle"); style_primary(self.btnAdd)
+        self.btnUpdate = QPushButton("Güncelle"); style_primary(self.btnUpdate)
+        self.btnDelete = QPushButton("Seçiliyi Sil"); style_danger(self.btnDelete)
+        self.btnDeleteAll = QPushButton("Tümünü Sil"); style_danger(self.btnDeleteAll)
+        self.btnClear = QPushButton("Temizle"); style_secondary(self.btnClear)
         btn_row.addWidget(self.btnAdd); btn_row.addWidget(self.btnUpdate)
         btn_row.addWidget(self.btnDelete); btn_row.addWidget(self.btnDeleteAll)
         btn_row.addStretch(1)
@@ -369,12 +406,12 @@ class BooksTab(QWidget):
         search_box = QGroupBox("Arama ve Dosya İşlemleri")
         sh = QHBoxLayout(search_box)
         self.edSearch = QLineEdit(); self.edSearch.setPlaceholderText("Başlık, yazar veya barkoda göre ara")
-        self.btnSearch = QPushButton("Ara")
+        self.btnSearch = QPushButton("Ara"); style_secondary(self.btnSearch)
         
         filter_layout = QHBoxLayout()
         self.cbFilterCategory = QComboBox(); self.cbFilterCategory.addItem("Tüm Kategoriler")
         self.cbFilterAuthor = QComboBox(); self.cbFilterAuthor.addItem("Tüm Yazarlar")
-        self.btnFilter = QPushButton("Filtrele")
+        self.btnFilter = QPushButton("Filtrele"); style_secondary(self.btnFilter)
 
         filter_layout.addWidget(QLabel("Kategori:")); filter_layout.addWidget(self.cbFilterCategory)
         filter_layout.addWidget(QLabel("Yazar:")); filter_layout.addWidget(self.cbFilterAuthor)
@@ -385,8 +422,8 @@ class BooksTab(QWidget):
         sh.addStretch(1)
         
         file_ops_layout = QHBoxLayout()
-        self.btnExport = QPushButton("Excel'e Aktar")
-        self.btnImport = QPushButton("Excel'den Al")
+        self.btnExport = QPushButton("Excel'e Aktar"); style_secondary(self.btnExport)
+        self.btnImport = QPushButton("Excel'den Al"); style_secondary(self.btnImport)
         file_ops_layout.addWidget(self.btnExport); file_ops_layout.addWidget(self.btnImport)
         sh.addLayout(file_ops_layout)
         
@@ -737,12 +774,11 @@ class MembersTab(QWidget):
         top_layout.addLayout(form_layout)
 
         btn_row = QHBoxLayout()
-        self.btnAdd = QPushButton("Ekle")
-        self.btnUpdate = QPushButton("Güncelle")
-        self.btnDelete = QPushButton("Seçiliyi Sil")
-        self.btnClear = QPushButton("Temizle")
-        self.btnDeleteAll = QPushButton("Tümünü Sil")
-        self.btnDeleteAll.setStyleSheet("color: red;")
+        self.btnAdd = QPushButton("Ekle"); style_primary(self.btnAdd)
+        self.btnUpdate = QPushButton("Güncelle"); style_primary(self.btnUpdate)
+        self.btnDelete = QPushButton("Seçiliyi Sil"); style_danger(self.btnDelete)
+        self.btnClear = QPushButton("Temizle"); style_secondary(self.btnClear)
+        self.btnDeleteAll = QPushButton("Tümünü Sil"); style_danger(self.btnDeleteAll)
         self.btnUpdate.setDisabled(True)
         btn_row.addWidget(self.btnAdd); btn_row.addWidget(self.btnUpdate)
         btn_row.addWidget(self.btnDelete); btn_row.addWidget(self.btnClear)
@@ -753,9 +789,9 @@ class MembersTab(QWidget):
         search_box = QGroupBox("Arama ve Dosya İşlemleri")
         sh = QHBoxLayout(search_box)
         self.edSearch = QLineEdit(); self.edSearch.setPlaceholderText("Ad, soyad veya numaraya göre ara")
-        self.btnSearch = QPushButton("Ara")
-        self.btnExport = QPushButton("Excel'e Aktar")
-        self.btnImport = QPushButton("Excel'den Al")
+        self.btnSearch = QPushButton("Ara"); style_secondary(self.btnSearch)
+        self.btnExport = QPushButton("Excel'e Aktar"); style_secondary(self.btnExport)
+        self.btnImport = QPushButton("Excel'den Al"); style_secondary(self.btnImport)
         sh.addWidget(self.edSearch); sh.addWidget(self.btnSearch); sh.addWidget(self.btnExport); sh.addWidget(self.btnImport)
         top_layout.addWidget(search_box)
         
@@ -1097,18 +1133,14 @@ class LoansTab(QWidget):
         book_input_layout.addWidget(self.edBookTitle)
         self.btnShowBookDetails = QPushButton("Detayları Göster")
         self.btnShowBookDetails.setDisabled(True)
-        self.btnShowBookDetails.setStyleSheet(SECONDARY_BUTTON_STYLE)
-        self.btnShowBookDetails.setMinimumHeight(32)
-        self.btnShowBookDetails.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+        style_secondary(self.btnShowBookDetails)
         book_input_layout.addWidget(self.btnShowBookDetails)
         
         self.deLoan = QDateEdit(); self.deLoan.setCalendarPopup(True); self.deLoan.setDate(QDate.currentDate())
         self.deDue = QDateEdit(); self.deDue.setCalendarPopup(True); # Süre ayarından okunacak
 
         self.btnLoan = QPushButton("Ödünç Ver")
-        self.btnLoan.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        self.btnLoan.setMinimumHeight(40)
-        self.btnLoan.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+        style_primary(self.btnLoan)
 
         left_panel_layout.addRow("Üye No:", self.edMemberNo)
         left_panel_layout.addRow("", self.member_suggest)
@@ -1145,9 +1177,7 @@ class LoansTab(QWidget):
         self.tblActive.setSelectionBehavior(QTableWidget.SelectRows)
         self.tblActive.setEditTriggers(QTableWidget.NoEditTriggers)
         self.btnReturn = QPushButton("Seçiliyi Teslim Al")
-        self.btnReturn.setStyleSheet(PRIMARY_BUTTON_STYLE)
-        self.btnReturn.setMinimumHeight(40)
-        self.btnReturn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
+        style_primary(self.btnReturn)
 
         hist_box = QGroupBox("Teslim Edilenler (Son 200)")
         self.tblHist = QTableWidget(0, 9)
@@ -1465,6 +1495,7 @@ class ReportsTab(QWidget):
         top_row.addStretch()
 
         self.btnRefresh = QPushButton("Raporları Yenile")
+        style_secondary(self.btnRefresh)
         self.btnRefresh.clicked.connect(self.refresh_reports)
 
         pdf_box = QGroupBox("PDF Raporları")
@@ -1485,6 +1516,7 @@ class ReportsTab(QWidget):
         date_layout.addWidget(self.deEndDate)
         
         self.btnExportPDF = QPushButton("PDF Oluştur")
+        style_primary(self.btnExportPDF)
         self.btnExportPDF.clicked.connect(self.export_pdf)
 
         pdf_layout.addRow("Rapor Türü:", self.cbReportType)
@@ -1766,6 +1798,7 @@ class SettingsTab(QWidget):
         
         info_label = QLabel("Uygulama her açıldığında otomatik yedekleme yapılır. İsterseniz şimdi manuel olarak da yedek alabilirsiniz.")
         self.btnBackup = QPushButton("Şimdi Yedekle")
+        style_primary(self.btnBackup)
         
         backup_layout.addWidget(info_label)
         backup_layout.addWidget(self.btnBackup)
@@ -1783,8 +1816,11 @@ class SettingsTab(QWidget):
         
         btn_layout = QHBoxLayout()
         self.btnAddUser = QPushButton("Kullanıcı Ekle")
+        style_primary(self.btnAddUser)
         self.btnUpdateUser = QPushButton("Seçiliyi Güncelle")
+        style_secondary(self.btnUpdateUser)
         self.btnDeleteUser = QPushButton("Seçiliyi Sil")
+        style_danger(self.btnDeleteUser)
         self.btnUpdateUser.setDisabled(True)
         self.btnDeleteUser.setDisabled(True)
         
@@ -1817,6 +1853,7 @@ class SettingsTab(QWidget):
         self.spDefaultLoanDays.setRange(1, 365)
         
         self.btnSaveSettings = QPushButton("Ayarları Kaydet")
+        style_primary(self.btnSaveSettings)
         settings_layout.addRow("Ödünç Alma Sınırı:", self.spLoanLimit)
         # YENİ EKLEME: Ödünç verme süresi ayar satırı
         settings_layout.addRow("Varsayılan Ödünç Süresi (gün):", self.spDefaultLoanDays)
@@ -1976,7 +2013,9 @@ class LoginDialog(QDialog):
         self.edPassword.setEchoMode(QLineEdit.Password)
 
         self.btnLogin = QPushButton("Giriş")
+        style_primary(self.btnLogin)
         self.btnExit = QPushButton("Çıkış")
+        style_secondary(self.btnExit)
         
         layout.addRow("Kullanıcı Adı:", self.edUsername)
         layout.addRow("Şifre:", self.edPassword)
