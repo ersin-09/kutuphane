@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, sys, sqlite3, datetime, re, shutil, random, string
+import os, sys, sqlite3, datetime, re, shutil, random, string, unicodedata
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QTabWidget, QVBoxLayout, QHBoxLayout,
@@ -178,11 +178,19 @@ def auto_backup():
     except Exception as e:
         print("Eski yedekleri silme hatası:", e)
 
+_TURKISH_FOLD_MAP = str.maketrans({
+    "ı": "i",
+})
+
+
 def normalize(s: str) -> str:
-    if s is None: return ""
-    t = str(s).strip().lower()
-    REP = {"ı":"i","İ":"i","ş":"s","Ş":"s","ğ":"g","Ğ":"g","ü":"u","Ü":"u","ö":"o","Ö":"o","ç":"c","Ç":"c"}
-    for k,v in REP.items(): t = t.replace(k,v)
+    if s is None:
+        return ""
+
+    t = str(s).strip().casefold()
+    t = unicodedata.normalize("NFKD", t)
+    t = ''.join(ch for ch in t if not unicodedata.combining(ch))
+    t = t.translate(_TURKISH_FOLD_MAP)
     t = re.sub(r"\s+", " ", t)
     return t
 
