@@ -15,6 +15,46 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 import hashlib
 
+PRIMARY_BUTTON_STYLE = """
+QPushButton {
+    background-color: #2563EB;
+    color: white;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 8px 18px;
+}
+QPushButton:hover {
+    background-color: #1D4ED8;
+}
+QPushButton:pressed {
+    background-color: #1E40AF;
+}
+QPushButton:disabled {
+    background-color: #93C5FD;
+    color: white;
+}
+"""
+
+SECONDARY_BUTTON_STYLE = """
+QPushButton {
+    background-color: #64748B;
+    color: white;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 6px 14px;
+}
+QPushButton:hover {
+    background-color: #475569;
+}
+QPushButton:pressed {
+    background-color: #334155;
+}
+QPushButton:disabled {
+    background-color: #CBD5F5;
+    color: white;
+}
+"""
+
 # -------------------------------------------------------------------------
 # Uygulamanın ana dizinini kesin olarak belirleme (.py ve .exe için)
 # -------------------------------------------------------------------------
@@ -1057,12 +1097,18 @@ class LoansTab(QWidget):
         book_input_layout.addWidget(self.edBookTitle)
         self.btnShowBookDetails = QPushButton("Detayları Göster")
         self.btnShowBookDetails.setDisabled(True)
+        self.btnShowBookDetails.setStyleSheet(SECONDARY_BUTTON_STYLE)
+        self.btnShowBookDetails.setMinimumHeight(32)
+        self.btnShowBookDetails.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
         book_input_layout.addWidget(self.btnShowBookDetails)
         
         self.deLoan = QDateEdit(); self.deLoan.setCalendarPopup(True); self.deLoan.setDate(QDate.currentDate())
         self.deDue = QDateEdit(); self.deDue.setCalendarPopup(True); # Süre ayarından okunacak
 
         self.btnLoan = QPushButton("Ödünç Ver")
+        self.btnLoan.setStyleSheet(PRIMARY_BUTTON_STYLE)
+        self.btnLoan.setMinimumHeight(40)
+        self.btnLoan.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 
         left_panel_layout.addRow("Üye No:", self.edMemberNo)
         left_panel_layout.addRow("", self.member_suggest)
@@ -1099,6 +1145,9 @@ class LoansTab(QWidget):
         self.tblActive.setSelectionBehavior(QTableWidget.SelectRows)
         self.tblActive.setEditTriggers(QTableWidget.NoEditTriggers)
         self.btnReturn = QPushButton("Seçiliyi Teslim Al")
+        self.btnReturn.setStyleSheet(PRIMARY_BUTTON_STYLE)
+        self.btnReturn.setMinimumHeight(40)
+        self.btnReturn.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 
         hist_box = QGroupBox("Teslim Edilenler (Son 200)")
         self.tblHist = QTableWidget(0, 9)
