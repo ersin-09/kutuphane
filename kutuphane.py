@@ -1267,9 +1267,17 @@ class LoansTab(QWidget):
             QMessageBox.information(self, "Bilgi", "Teslim almak için bir ödünç kaydı seçin.")
             return
         
-        loan_id = int(self.tblActive.item(rows[0].row(), 0).text())
-        
-        if QMessageBox.question(self, "Onay", "Seçili kitabı teslim almak istediğinizden emin misiniz?") == QMessageBox.Yes:
+        selected_row = rows[0].row()
+        loan_id = int(self.tblActive.item(selected_row, 0).text())
+        member_name = self.tblActive.item(selected_row, 2).text()
+        book_title = self.tblActive.item(selected_row, 5).text()
+
+        confirm_text = (
+            f"{member_name} adlı üyenin\n"
+            f"\"{book_title}\" kitabını teslim almak istediğinizden emin misiniz?"
+        )
+
+        if QMessageBox.question(self, "Onay", confirm_text) == QMessageBox.Yes:
             with db_conn() as conn:
                 c = conn.cursor()
                 
