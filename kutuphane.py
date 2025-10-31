@@ -1405,7 +1405,7 @@ class LoansTab(QWidget):
         if QMessageBox.question(self, "Onay", confirm_text) == QMessageBox.Yes:
             with db_conn() as conn:
                 c = conn.cursor()
-                
+
                 # İlgili kitabın ID'sini bul
                 c.execute("SELECT book_id FROM loans WHERE id=?", (loan_id,))
                 book_id = c.fetchone()[0]
@@ -1417,8 +1417,9 @@ class LoansTab(QWidget):
                 # Kitabın adedini artır
                 c.execute("UPDATE books SET adet = adet + 1 WHERE id=?", (book_id,))
                 conn.commit()
-                
+
             self.refresh_tables()
+            self.edActiveSearch.clear()
             QMessageBox.information(self, "Başarılı", "Kitap teslim alındı.")
 
     def refresh_tables(self):
